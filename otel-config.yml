@@ -1,0 +1,43 @@
+receivers:
+  filelog:
+    include:
+      - /var/lib/docker/containers/*/*.log
+    # This operator turns the raw Docker JSON string into structured data
+    operators:
+      - type: json_parser
+        timestamp:
+          parse_from: attributes.time
+          layout: '%Y-%m-%dT%H:%M:%S.%LZ'
+    # This adds the container ID to the log so we can identify it
+    include_file_path: true
+    include_file_name: false
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    # limit_mib should be ~80-90% of your Docker limit (1500MB * 0.8 = 1200MB)
+    limit_mib: 820
+    # spike_limit_mib should be ~20% of the limit
+    spike_limit_mib: 200
+  batch:
+  # This makes the logs readable by adding container names/labels
+  resourcedetection:
+    detectors: [env, docker]
+
+exporters:
+  # This sends the logs to your new GreptimeDB container
+  otlphttp/greptimedb:
+    endpoint: "http://supabase-greptimedb:4003/v1/otlp"
+    headers:
+      "X-Greptime-DB-Name": "public"
+
+  # For now, we will print logs to the terminal to confirm it works
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
+      processors: [batch, resourcedetection]
+      exporters: [debug, otlphttp/greptimedb]
