@@ -11,6 +11,13 @@ receivers:
     # This adds the container ID to the log so we can identify it
     include_file_path: true
     include_file_name: false
+  
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
 
 processors:
   memory_limiter:
@@ -20,6 +27,8 @@ processors:
     # spike_limit_mib should be ~20% of the limit
     spike_limit_mib: 200
   batch:
+    send_batch_size: 1000
+    timeout: 10s
   # This makes the logs readable by adding container names/labels
   resourcedetection:
     detectors: [env, docker]
@@ -30,6 +39,8 @@ exporters:
     endpoint: "http://supabase-greptimedb:4000/v1/otlp"  #using the internal port 4000 for greptimedb
     headers:
       "X-Greptime-DB-Name": "public"
+    tls:
+      insecure: true
 
   # For now, we will print logs to the terminal to confirm it works
   debug:
