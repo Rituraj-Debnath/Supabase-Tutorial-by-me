@@ -27,7 +27,7 @@ processors:
 exporters:
   # This sends the logs to your new GreptimeDB container
   otlphttp/greptimedb:
-    endpoint: "http://supabase-greptimedb:4003/v1/otlp"
+    endpoint: "http://supabase-greptimedb:4000/v1/otlp"  #using the internal port 4000 for greptimedb
     headers:
       "X-Greptime-DB-Name": "public"
 
@@ -38,6 +38,6 @@ exporters:
 service:
   pipelines:
     logs:
-      receivers: [filelog]
-      processors: [batch, resourcedetection]
+      receivers: [filelog, otlp]
+      processors: [memory_limiter, resourcedetection, batch]
       exporters: [debug, otlphttp/greptimedb]
