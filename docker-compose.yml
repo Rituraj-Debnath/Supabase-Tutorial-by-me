@@ -35,7 +35,7 @@ services:
       - "8888:8888"   # Metrics for the collector itself
       - "13133:13133" # Health check extension
     volumes:
-      # Use the absolute path to the config you created in Step 2
+      #  absolute path to the config 
       - /home/ubuntu/git-clone/supabase/docker/otel-stack/otel-config.yaml:/etc/otelcol/config.yaml
       # This allows OTEL to read the actual log files from the host
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
