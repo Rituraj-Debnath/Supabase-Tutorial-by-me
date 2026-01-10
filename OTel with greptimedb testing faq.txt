@@ -1,0 +1,41 @@
+To understand after docker compose up that OTEL is successfully working or not use the command:
+docker logs -f supabase-otel (name_of_the_container)
+
+
+2. To check OTEL is shipping the logs to greptimedb or not use this : 
+docker logs supabase-otel 2>&1 | grep -i "exporting failed"
+# Verify OTEL is sending successfully
+docker logs supabase-otel | grep "Exporting finished"
+
+
+----- After doing docker compose up,,,in htop i can clearly see vector is taking the entire resources on the ec2 ,,so for now im commenting out vector completely. After that i found much more stability on the server resources, now from htop i can see the load is between 30-60%....while analytics is still running and taking 450MB ram ,,so it can be commented out later if needed much as vector is gone and analytics is not getting any logs .
+
+3. To check greptimedb is getting the logs from otel or not :
+
+curl -X POST 'http://localhost:4004/v1/sql' \
+-d 'sql=SELECT count(*) FROM opentelemetry_logs'
+
+as greptimedb store logs in a defualt table called opentelemetry_logs.
+
+
+4. while im seeing that storage in the ec2 server is vanished after aggregating logs. lets fix it .
+
+so we can cap the logs for each service like greptime and otel ,,but its difficult to maintain of if needed can be done later..so im getting the easiest way so im gonna edit or create a file in this location : sudo nano /etc/docker/daemon.json  and write this code : 
+
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m",
+    "max-file": "3"
+  }
+}
+
+means maintain only 3 file sized 100mb each , total 300mb of logs for all the docker containers . and just do : sudo systemctl restart docker
+
+
+********* to instantly wipe out current logs of ebs :
+sudo sh -c 'truncate -s 0 /var/lib/docker/containers/*/*-json.log'
+
+
+
+
