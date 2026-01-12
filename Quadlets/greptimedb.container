@@ -1,0 +1,18 @@
+[Unit]
+Description=GreptimeDB Service
+After=network-online.target
+
+[Container]
+Image=greptime/greptimedb:latest
+ContainerName=supabase-greptimedb
+PublishPort=4004:4000
+PublishPort=4001:4001
+PublishPort=4003:4003
+Exec=standalone start --http-addr 0.0.0.0:4000 --postgres-addr 0.0.0.0:4003
+Volume=greptimedb_data:/tmp/greptimedb
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
