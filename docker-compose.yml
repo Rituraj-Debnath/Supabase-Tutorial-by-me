@@ -16,7 +16,8 @@ services:
       - "4004:4000"  #its the http web dashboard port
       - "4001:4001"  #its grpc for high performance data shipping
       - "4003:4003"  #postgres
-    command: "standalone start --http-addr 0.0.0.0:4000 --postgres-addr 0.0.0.0:4003"
+    command: "standalone start --data-home /tmp/greptimedb --http-addr 0.0.0.0:4000 --postgres-addr 0.0.0.0:4003"
+
     volumes:
       - greptimedb_data:/tmp/greptimedb
     logging:

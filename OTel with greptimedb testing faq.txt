@@ -38,4 +38,13 @@ sudo sh -c 'truncate -s 0 /var/lib/docker/containers/*/*-json.log'
 
 
 
+***** recently i got in a problem where i saw the vol in the ec2 and the vol inside greptimedb's container that logs are not stored ,,but its mapped then why ? so the in the command of greptimedb i was only telling to start but not telling where to write,,so i changed the command and its working ,,to see run those : 
+
+sudo ls -lh /var/lib/docker/volumes/supabase_greptimedb_data/_datata  : to see the data storing by greptime or not , must be same with its contianer data path right ? 
+
+run : docker exec -it supabase-greptimedb ls -lh /tmp/greptimedb
+
+so now both looks same,,great !!!! 
+
+
 
