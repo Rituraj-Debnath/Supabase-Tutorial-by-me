@@ -3,6 +3,10 @@ receivers:
     include:
       - /var/lib/docker/containers/*/*.log
     # This operator turns the raw Docker JSON string into structured data
+    exclude:
+      # Stop OTEL from reading its own logs and GreptimeDB's logs
+      - /var/lib/docker/containers/*/*supabase-otel*.log
+      - /var/lib/docker/containers/*/*supabase-greptimedb*.log
     operators:
       - type: json_parser
         timestamp:
@@ -44,7 +48,7 @@ exporters:
 
   # For now, we will print logs to the terminal to confirm it works
   debug:
-    verbosity: detailed
+    verbosity: basic
 
 service:
   pipelines:
