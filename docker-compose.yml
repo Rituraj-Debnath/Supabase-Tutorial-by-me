@@ -621,6 +621,7 @@ services:
     volumes:
       - coroot_data:/data
     command:
+      - '--listen=:8080'
       - '--data-dir=/data'
       # We point Coroot to GreptimeDB instead of a local Prometheus container
       - '--bootstrap-prometheus-url=http://supabase-greptimedb:4000/v1/prometheus'
@@ -638,14 +639,14 @@ services:
       - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command: 
-      - "--collector-endpoint=http://coroot:8080/api/v1/write?api_key=6eqzP-9btHzdDxJPGPSk1lu50TgK0aIa"
+      - "--collector-endpoint=http://coroot:8080"
     restart: unless-stopped
 
   coroot-cluster-agent:
     image: ghcr.io/coroot/coroot-cluster-agent:latest
     container_name: coroot-cluster-agent
     command: 
-      - "--coroot-url=http://coroot:8080/api/v1/write?api_key=6eqzP-9btHzdDxJPGPSk1lu50TgK0aIa"
+      - "--coroot-url=http://coroot:8080"
     restart: unless-stopped
 
 volumes:
