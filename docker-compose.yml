@@ -42,7 +42,7 @@ services:
     # Root user is required to read /var/lib/docker/containers logs
     user: "0:0"
     ports:
-      - "4317:4317"   # OTLP gRPC
+      - "4319:4319"   # OTLP gRPC
       - "4318:4318"   # OTLP HTTP
       - "8888:8888"   # Metrics for the collector itself
       - "13133:13133" # Health check extension
@@ -613,43 +613,43 @@ services:
         "/app/bin/migrate && /app/bin/supavisor eval \"$$(cat /etc/pooler/pooler.exs)\" && /app/bin/server"
       ]
 
-  coroot:
-    image: ghcr.io/coroot/coroot:latest
-    container_name: coroot
-    ports:
-      - "8080:8080"
-    volumes:
-      - coroot_data:/data
-    command:
-      - '--listen=:8080'
-      - '--data-dir=/data'
-      # We point Coroot to GreptimeDB instead of a local Prometheus container
-      - '--bootstrap-prometheus-url=http://supabase-greptimedb:4000/v1/prometheus'
-      - '--bootstrap-refresh-interval=15s'
-    restart: unless-stopped
+  # coroot:
+  #   image: ghcr.io/coroot/coroot:latest
+  #   container_name: coroot
+  #   ports:
+  #     - "8080:8080"
+  #   volumes:
+  #     - coroot_data:/data
+  #   command:
+  #     - '--listen=:8080'
+  #     - '--data-dir=/data'
+  #     # We point Coroot to GreptimeDB instead of a local Prometheus container
+  #     - '--bootstrap-prometheus-url=http://supabase-greptimedb:4000/v1/prometheus'
+  #     - '--bootstrap-refresh-interval=15s'
+  #   restart: unless-stopped
 
-  coroot-node-agent:
-    image: ghcr.io/coroot/coroot-node-agent:latest
-    container_name: coroot-node-agent
-    privileged: true
-    pid: "host"
-    volumes:
-      - /sys/kernel/tracing:/sys/kernel/tracing:ro
-      - /sys/kernel/debug:/sys/kernel/debug:ro
-      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    command: 
-      - "--collector-endpoint=http://coroot:8080"
-    restart: unless-stopped
+  # coroot-node-agent:
+  #   image: ghcr.io/coroot/coroot-node-agent:latest
+  #   container_name: coroot-node-agent
+  #   privileged: true
+  #   pid: "host"
+  #   volumes:
+  #     - /sys/kernel/tracing:/sys/kernel/tracing:ro
+  #     - /sys/kernel/debug:/sys/kernel/debug:ro
+  #     - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   command: 
+  #     - "--collector-endpoint=http://coroot:8080"
+  #   restart: unless-stopped
 
-  coroot-cluster-agent:
-    image: ghcr.io/coroot/coroot-cluster-agent:latest
-    container_name: coroot-cluster-agent
-    command: 
-      - "--coroot-url=http://coroot:8080"
-    restart: unless-stopped
+  # coroot-cluster-agent:
+  #   image: ghcr.io/coroot/coroot-cluster-agent:latest
+  #   container_name: coroot-cluster-agent
+  #   command: 
+  #     - "--coroot-url=http://coroot:8080"
+  #   restart: unless-stopped
 
 volumes:
   db-config:
   greptimedb_data:
-  coroot_data:
+  #coroot_data:
