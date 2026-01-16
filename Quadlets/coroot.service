@@ -1,0 +1,61 @@
+#### my updated command for running coroot service ( with cluster agent)
+curl -sfL https://raw.githubusercontent.com/coroot/coroot/main/deploy/install.sh | \	
+  BOOTSTRAP_PROMETHEUS_URL="http://127.0.0.1:4004/v1/prometheus" \
+  BOOTSTRAP_REFRESH_INTERVAL=15s \
+  sh -
+
+
+
+
+
+
+
+[Unit]
+Description=Coroot Server
+After=network.target
+
+[Service]
+User=root
+ExecStart=/usr/local/bin/coroot \
+  --listen=:8080 \
+  --data-dir=/var/lib/coroot \
+  --bootstrap-prometheus-url=http://127.0.0.1:4004/v1/prometheus \
+  --bootstrap-refresh-interval=15s \
+  --otlp-listen=
+Restart=always
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+
+
+#### defualt eschilo seta 
+[Unit]
+Description=Coroot
+Documentation=https://docs.coroot.com
+Wants=network-online.target
+After=network-online.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=exec
+EnvironmentFile=-/etc/default/%N
+EnvironmentFile=-/etc/sysconfig/%N
+EnvironmentFile=-/etc/systemd/system/coroot.service.env
+KillMode=process
+Delegate=yes
+# Having non-zero Limit*s causes performance problems due to accounting overhead
+# in the kernel. We recommend using cgroups to do container-local accounting.
+LimitNOFILE=1048576
+LimitNPROC=infinity
+LimitCORE=infinity
+TasksMax=infinity
+TimeoutStartSec=0
+Restart=always
+RestartSec=5s
+ExecStart=/usr/local/bin/coroot --data-dir=/var/lib/coroot

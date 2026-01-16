@@ -1,0 +1,38 @@
+###### my updated command to install coroot node agent ###
+
+curl -sfL https://raw.githubusercontent.com/coroot/coroot-node-agent/main/install.sh | \
+  COLLECTOR_ENDPOINT=http://127.0.0.1:8080 \
+  SCRAPE_INTERVAL=15s \
+  sh -
+
+
+
+
+
+[Unit]
+Description=Coroot Node Agent
+After=network.target coroot.service
+
+[Service]
+Type=simple
+User=root
+
+ExecStart=/usr/local/bin/coroot-node-agent \
+  --collector-endpoint=http://127.0.0.1:8080
+
+Restart=always
+LimitNOFILE=1048576
+
+# Required for eBPF & kernel tracing
+CapabilityBoundingSet=CAP_SYS_ADMIN CAP_NET_ADMIN
+AmbientCapabilities=CAP_SYS_ADMIN CAP_NET_ADMIN
+
+# Access to kernel & cgroups
+ProtectSystem=no
+ProtectKernelTunables=no
+ProtectKernelModules=no
+ProtectControlGroups=no
+PrivateTmp=no
+
+[Install]
+WantedBy=multi-user.target
