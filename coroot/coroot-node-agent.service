@@ -8,6 +8,14 @@ After=network-online.target
 WantedBy=multi-user.target
 
 [Service]
+#---
+# Limit CPU to 15% and Memory to 256MB
+CPUQuota=15%
+MemoryMax=256M
+# 2. Unlock the gate for eBPF maps (Kernel-space)
+#before that it was giving not much memory error
+LimitMEMLOCK=infinity
+#---
 Type=exec
 EnvironmentFile=-/etc/default/%N
 EnvironmentFile=-/etc/sysconfig/%N
